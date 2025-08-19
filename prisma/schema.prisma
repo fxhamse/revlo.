@@ -1,0 +1,526 @@
+// --- Employee Category Enum ---
+enum EmployeeCategory {
+  COMPANY
+  PROJECT
+}
+// prisma/schema.prisma
+// Kani waa schema-ga database-kaaga oo dhammaystiran.
+// Waxaa ku jira dhammaan models-ka Revlo iyo xiriiradooda.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Wallet {
+  id       String @id @default(cuid())
+  userId   String @unique
+  balance  Float  @default(0)
+  currency String @default("USD")
+  user     User   @relation(fields: [userId], references: [id])
+
+  @@map("wallets")
+}
+
+datasource db {
+  provider = "postgresql" // Waxaad u beddeli kartaa database-kaaga (e.g., "mysql", "sqlite")
+  url      = env("DATABASE_URL")
+}
+
+// --- User Management Models ---
+
+enum Role {
+  ADMIN // Maamulaha guud, wax walba wuu sameyn karaa
+  MANAGER // Maamulaha qaybta, wuxuu maamuli karaa mashaariic, kharashyo, iwm.
+  MEMBER // Xubin caadi ah, wuxuu diiwaan gelin karaa kharashyo, wuxuu arki karaa mashaariicdiisa
+  VIEWER // Kaliya wuxuu arki karaa xogta, waxba ma beddeli karo
+}
+
+model User {
+  id           String    @id @default(uuid()) @map("_id")
+  fullName     String
+  phone        String    @default("")
+  email        String    @unique
+  password     String // Hashed password
+  role         Role      @default(MEMBER)
+  status       String    @default("Active") // Active, Inactive
+  TwoFAEnabled Boolean   @default(false)
+  lastLogin    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  expenses     Expense[]
+  wallet       Wallet? // <-- Hal wallet oo user ah
+  transactions Transaction[]
+
+  projects      Project[] @relation("ProjectMembers")
+  tasksAssigned Task[]    @relation("AssignedTo")
+
+  @@map("users")
+}
+
+model Task {
+  id        String    @id @default(uuid()) @map("_id")
+  title     String
+  content   String?
+  status    String    @default("TODO") // e.g., "TODO", "IN_PROGRESS", "DONE"
+  priority  String    @default("MEDIUM") // e.g., "LOW", "MEDIUM", "HIGH"
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  @@map("tasks")
+}
+
+// --- Company & Organizational Models ---
+
+model Company {
+  id               String    @id @default(uuid()) @map("_id")
+  name             String    @unique
+  industry         String?
+  email            String?
+  phone            String?
+  address          String?
+  website          String?
+  taxId            String?
+  registrationDate DateTime?
+  logoUrl          String? // URL for company logo
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  users           User[] // Shirkaddu waxay leedahay users badan
+  projects        Project[] // Shirkaddu waxay leedahay mashaariic badan
+  expenses        Expense[] // Shirkaddu waxay leedahay kharashyo badan (guud)
+  customers       Customer[] // Shirkaddu waxay leedahay macaamiil badan
+  vendors         Vendor[] // Shirkaddu waxay leedahay iibiyayaal badan
+  accounts        Account[] // Shirkaddu waxay leedahay accounts badan
+  fixedAssets     FixedAsset[] // Shirkaddu waxay leedahay hanti go'an
+  shareholders    Shareholder[] // Shirkaddu waxay leedahay saamiley
+  notifications   Notification[] // NEW: Shirkaddu waxay leedahay digniino
+  inventoryItems  InventoryItem[] // <-- Ku dar xariiqdan si aad u saxdo ciladda
+  employees       Employee[]
+  ExpenseCategory ExpenseCategory[]
+  transactions    Transaction[] // Ku dar relation-ka Transaction
+
+  @@map("companies")
+}
+
+model Shareholder {
+  id              String   @id @default(uuid()) @map("_id")
+  name            String
+  email           String
+  sharePercentage Float // Boqolleyda saamiga (e.g., 50.0 for 50%)
+  profitSplit     Decimal  @default(0.0) @db.Decimal(12, 2) // Qaybsiga faa'iidada
+  joinedDate      DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  companyId String // Samileydu waxay ka tirsan tahay shirkad
+  company   Company @relation(fields: [companyId], references: [id])
+
+  @@map("shareholders")
+}
+
+// --- Project Management Models ---
+
+model Project {
+  id                     String    @id @default(uuid()) @map("_id")
+  name                   String
+  description            String?
+  agreementAmount        Decimal   @default(0.0) @db.Decimal(12, 2) // Lacagta lagu heshiiyay
+  advancePaid            Decimal   @default(0.0) @db.Decimal(12, 2) // Lacagta hore loo bixiyay
+  remainingAmount        Decimal   @default(0.0) @db.Decimal(12, 2) // Lacagta hadhay (auto-calculated)
+  projectType            String // e.g., "Furniture Manufacturing", "Office Fit-out"
+  status                 String    @default("Active") // Active, Completed, On Hold, Cancelled, Overdue
+  expectedCompletionDate DateTime?
+  actualCompletionDate   DateTime?
+  notes                  String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  // Relations
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  expenses      Expense[] // Kharashyada mashruuca
+  transactions  Transaction[] // Dhaqdhaqaaqyada lacageed
+  materialsUsed ProjectMaterial[] // Alaabta loo isticmaalay mashruuca
+  laborRecords  ProjectLabor[] // Diiwaanka shaqaalaha mashruuca
+  documents     ProjectDocument[] // Dukumentiyada mashruuca
+  payments      Payment[] // Lacagaha la helay ee mashruuca
+
+  // Xubnaha mashruuca (members) iyo tasks
+  members User[] @relation("ProjectMembers")
+  tasks   Task[]
+
+  // Mustaqbalka dhaw: waxaad si fudud ugu dari kartaa relations cusub sida:
+  // notifications   Notification[]
+  // reports         Report[]
+  // analytics       Analytics[]
+
+  @@map("projects")
+}
+
+model ProjectMaterial {
+  id           String   @id @default(uuid()) @map("_id")
+  name         String
+  quantityUsed Float // Tirada la isticmaalay
+  unit         String // Unit (e.g., "sq ft", "pcs")
+  costPerUnit  Decimal  @db.Decimal(10, 2)
+  leftoverQty  Float    @default(0.0) // Tirada hadhay ee la celin karo
+  dateUsed     DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@map("project_materials")
+}
+
+model ProjectLabor {
+  id              String   @id @default(uuid()) @map("_id")
+  employeeName    String
+  employeeId      String?
+  workDescription String
+  agreedWage      Decimal  @db.Decimal(10, 2)
+  paidAmount      Decimal  @db.Decimal(10, 2)
+  remainingWage   Decimal  @db.Decimal(10, 2) // Auto-calculated
+  dateWorked      DateTime @default(now())
+
+  projectId String
+  employee  Employee? @relation(fields: [employeeId], references: [id])
+  project   Project   @relation(fields: [projectId], references: [id])
+
+  @@map("project_labor")
+}
+
+model ProjectDocument {
+  id         String   @id @default(uuid()) @map("_id")
+  name       String
+  fileUrl    String // URL of the document (e.g., cloud storage)
+  fileType   String // e.g., "PDF", "Image", "Word"
+  uploadedAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@map("project_documents")
+}
+
+model Payment {
+  id          String   @id @default(uuid()) @map("_id")
+  amount      Decimal  @db.Decimal(12, 2)
+  paymentDate DateTime
+  paymentType String // e.g., "Advance", "Milestone", "Final"
+  receivedIn  String // e.g., "CBE Account", "Cash"
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  customerId String? // Optional: link to customer who made the payment
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  @@map("payments")
+}
+
+model Employee {
+  id                  String    @id @default(uuid()) @map("_id")
+  fullName            String
+  email               String?   @unique
+  phone               String?
+  role                String
+  category            EmployeeCategory @default(COMPANY)
+  monthlySalary       Decimal? // Now optional/null for project employees
+  salaryPaidThisMonth Decimal   @default(0.0) @db.Decimal(12, 2)
+  lastPaymentDate     DateTime?
+  isActive            Boolean   @default(true)
+  startDate           DateTime  @default(now()) // Default value si rows hore loo buuxiyo
+  overpaidAmount      Decimal   @default(0.0) @db.Decimal(12, 2) // NEW: Lacagta la siidaayay marka loo eego kasbashada
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  companyId String // Employee belongs to a company
+  company   Company @relation(fields: [companyId], references: [id])
+
+  laborRecords ProjectLabor[]
+  transactions Transaction[]
+  expenses     Expense[]
+
+  @@map("employees")
+}
+
+model ExpenseCategory {
+  id          String   @id @default(uuid()) @map("_id")
+  name        String   @unique
+  type        String
+  description String?
+  companyId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company  Company   @relation(fields: [companyId], references: [id])
+  expenses Expense[] // Relation: category can have many expenses
+
+  @@map("expense_categories")
+}
+
+// --- Expense Management Models ---
+model Expense {
+  id          String   @id @default(uuid()) @map("_id")
+  description String
+  amount      Decimal  @db.Decimal(12, 2)
+  category    String
+  subCategory String?
+  paidFrom    String
+  expenseDate DateTime @default(now())
+  note        String?
+  approved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  materials Json? // [{ name, qty, price, unit }], for Material expenses
+  transportType String? // For Transport expenses: vehicle/type info
+  consultantName String? // For Consultancy expenses: consultant's name
+  consultancyType String? // For Consultancy expenses: type of consultancy
+  consultancyFee Decimal? @db.Decimal(12, 2) // For Consultancy expenses: fee amount
+  equipmentName    String?   // Equipment Rental
+  rentalPeriod     String?   // Equipment Rental
+  rentalFee        Float?    // Equipment Rental
+  supplierName     String?   // Equipment Rental
+  bankAccountId    String?   // Equipment Rental
+
+  companyId String
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  vendorId String?
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
+  employeeId String? // <-- Ku dar relation-ka Employee
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  categoryId      String? // <-- Ku dar relation-ka ExpenseCategory
+  expenseCategory ExpenseCategory? @relation(fields: [categoryId], references: [id])
+
+  transactions Transaction[]
+
+  @@map("expenses")
+}
+
+// --- Inventory Management Models ---
+
+model InventoryItem {
+  id             String   @id @default(uuid()) @map("_id")
+  name           String
+  category       String // e.g., "Wood", "Hardware"
+  unit           String // e.g., "sq ft", "pcs", "Liter"
+  inStock        Float // Quantity currently in stock
+  minStock       Float // Minimum stock level for alert
+  purchasePrice  Decimal  @db.Decimal(10, 2) // Cost per unit
+  sellingPrice   Decimal  @db.Decimal(10, 2) // Selling price per unit
+  usedInProjects Float    @default(0.0) // Total quantity used across all projects
+  lastUpdated    DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  companyId String // Item belongs to a company's inventory
+  company   Company @relation(fields: [companyId], references: [id])
+
+  @@unique([name, companyId]) // <-- Ku dar xariiqdan si Prisma uu u fahmo composite unique
+  @@map("inventory_items")
+}
+
+// --- Fixed Assets Model (Added as it was missing in the previous snippet) ---
+model FixedAsset {
+  id               String   @id @default(uuid()) @map("_id")
+  name             String
+  type             String // e.g., "Machinery", "Furniture", "Vehicle", "Electronics"
+  value            Decimal  @db.Decimal(12, 2) // Initial purchase value
+  purchaseDate     DateTime
+  assignedTo       String? // e.g., "Factory", "Office", "Project A"
+  status           String   @default("Active") // Active, Under Maintenance, Retired, Assigned
+  depreciationRate Float // Annual depreciation rate (e.g., 0.10 for 10%)
+  currentBookValue Decimal  @db.Decimal(12, 2) // Value after depreciation
+  lastUpdated      DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  companyId String // Asset belongs to a company
+  company   Company @relation(fields: [companyId], references: [id])
+
+  @@unique([name, companyId]) // <-- KU DAR: Composite unique constraint
+  @@map("fixed_assets")
+}
+
+// --- Customer & Vendor Management Models ---
+
+model Customer {
+  id          String   @id @default(uuid()) @map("_id")
+  name        String
+  type        String   @default("Individual") // Individual, Company
+  companyName String? // If customer is a company
+  phone       String?
+  email       String?
+  address     String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  companyId String // Customer belongs to a company
+  company   Company @relation(fields: [companyId], references: [id])
+
+  projects     Project[] // Customer can have many projects
+  payments     Payment[] // Customer can make many payments (to projects)
+  transactions Transaction[] // Customer can have many transactions
+  expenses     Expense[] // Customer can have many expenses (company debts, etc)
+
+  @@unique([name, companyId]) // MUHIIM: Hubi in tani ay jirto!
+  @@map("customers")
+}
+
+model Vendor {
+  id               String   @id @default(uuid()) @map("_id")
+  name             String
+  type             String // e.g., "Material", "Labor", "Transport", "Other"
+  phone            String?
+  email            String?
+  address          String?
+  productsServices String? // Description of products/services provided
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  companyId    String // Vendor belongs to a company
+  company      Company       @relation(fields: [companyId], references: [id])
+  transactions Transaction[] // Vendor can have many transactions
+  expenses     Expense[] // Vendor can have many expenses
+
+  @@unique([name, companyId])
+  @@map("vendors")
+}
+
+// --- Accounting & Financial Models ---
+
+enum AccountType {
+  BANK
+  CASH
+  MOBILE_MONEY
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER_IN
+  TRANSFER_OUT
+  DEBT_TAKEN
+  DEBT_REPAID
+  OTHER
+}
+
+model Account {
+  id        String      @id @default(uuid()) @map("_id")
+  name      String // e.g., "CBE Account", "Ebirr Account", "Cash"
+  type      AccountType // e.g., BANK, CASH, MOBILE_MONEY
+  balance   Decimal     @default(0.0) @db.Decimal(12, 2)
+  currency  String      @default("ETB")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  companyId String // Account belongs to a company
+  company   Company @relation(fields: [companyId], references: [id])
+
+  transactions     Transaction[] @relation("PrimaryAccount") // An account can have many transactions (as primary account)
+  fromTransactions Transaction[] @relation("FromAccount") // For transfers as source
+  toTransactions   Transaction[] @relation("ToAccount") // For transfers as destination
+
+  @@unique([name, companyId]) // <-- KU DAR: Composite unique constraint
+  @@map("accounts")
+}
+
+model Transaction {
+  id              String          @id @default(uuid()) @map("_id")
+  description     String
+  amount          Decimal         @db.Decimal(12, 2)
+  type            TransactionType // e.g., INCOME, EXPENSE, TRANSFER_IN, TRANSFER_OUT, DEBT_TAKEN, DEBT_REPAID
+  transactionDate DateTime        @default(now())
+  note            String?
+  category        String? // e.g., "Safarka", "Qalabka" (NEW: si loo kala saaro noocyada kharashka)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  companyId String // Transaction belongs to a company (multi-tenancy)
+  company   Company @relation(fields: [companyId], references: [id])
+
+  accountId String? // The primary account affected by this transaction
+  account   Account? @relation("PrimaryAccount", fields: [accountId], references: [id])
+
+  fromAccountId String? // For transfers: the source account
+  fromAccount   Account? @relation("FromAccount", fields: [fromAccountId], references: [id])
+
+  toAccountId String? // For transfers: the destination account
+  toAccount   Account? @relation("ToAccount", fields: [toAccountId], references: [id])
+
+  projectId String? // If related to a project
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  expenseId String? // If related to an expense record
+  expense   Expense? @relation(fields: [expenseId], references: [id])
+
+  customerId String? // If related to a customer
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  vendorId String? // If related to a vendor
+  vendor   Vendor? @relation(fields: [vendorId], references: [id])
+
+  userId String? // Who recorded the transaction
+  user   User?   @relation(fields: [userId], references: [id])
+
+  employeeId String? // If related to an employee
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  @@map("transactions")
+}
+
+// --- Notification Model (Added as it was missing in the previous snippet) ---
+model Notification {
+  id        String   @id @default(uuid()) @map("_id")
+  message   String
+  type      String // e.g., "Overdue Project", "Low Stock", "User Activity", "System Activity"
+  date      DateTime @default(now())
+  read      Boolean  @default(false)
+  details   String? // Detailed message or JSON string of changes
+  user      String? // User related to the activity (e.g., "Axmed Cali")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyId String // Notification belongs to a company
+  company   Company @relation(fields: [companyId], references: [id])
+
+  @@map("notifications")
+}
+
+// --- Reports & Analytics (No direct models, data is aggregated from other models) ---
+// Reports will query and aggregate data from Project, Expense, Account, Transaction models.
+// No new models are typically needed for reports themselves, unless you cache report data.
