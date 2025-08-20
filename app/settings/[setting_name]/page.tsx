@@ -11,7 +11,7 @@ const PageIcon = SettingsIcon;
 const PageTitle = "General Settings"; // Replace with actual title (e.g., "Bank Accounts")
 const PageDescription = "Manage your general application settings here."; // Replace with actual description
 
-export default function GenericSettingsPage() { // Rename this function based on the page (e.g., BankAccountsSettingsPage)
+export default function Page() {
   return (
     <Layout>
       {/* Page Header - Enhanced */}

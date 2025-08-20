@@ -52,23 +52,20 @@ interface Account {
   }[];
 }
 
-const AccountDetailsPage: React.FC = () => {
-  const { id } = useParams(); // Get account ID from URL
+function Page() {
+  const { id } = useParams();
   const router = useRouter();
   const [account, setAccount] = useState<Account | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview');
   const [toastMessage, setToastMessage] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  // --- API Functions ---
   const fetchAccountDetails = async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/accounting/accounts/${id}`);
       if (!response.ok) throw new Error('Failed to fetch account details');
       const data = await response.json();
-      
-      // Convert Decimal fields to Number for frontend display
       const processedAccount = {
         ...data.account,
         balance: parseFloat(data.account.balance),
@@ -76,12 +73,12 @@ const AccountDetailsPage: React.FC = () => {
         fromTransactions: data.account.fromTransactions.map((trx: any) => ({ ...trx, amount: parseFloat(trx.amount) })),
         toTransactions: data.account.toTransactions.map((trx: any) => ({ ...trx, amount: parseFloat(trx.amount) })),
       };
-      setAccount(processedAccount); 
+      setAccount(processedAccount);
     } catch (error: any) {
       console.error('Error fetching account details:', error);
       setToastMessage({ message: error.message || 'Cilad ayaa dhacday marka faahfaahinta account-ka la soo gelinayay.', type: 'error' });
       setAccount(null);
-      router.push('/accounting/accounts'); 
+      router.push('/accounting/accounts');
     } finally {
       setLoading(false);
     }
@@ -95,9 +92,8 @@ const AccountDetailsPage: React.FC = () => {
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.message || 'Failed to delete account');
-        
         setToastMessage({ message: data.message || 'Account-ka si guul leh ayaa loo tirtiray!', type: 'success' });
-        router.push('/accounting/accounts'); 
+        router.push('/accounting/accounts');
       } catch (error: any) {
         console.error('Error deleting account:', error);
         setToastMessage({ message: error.message || 'Cilad ayaa dhacday marka account-ka la tirtirayay.', type: 'error' });
@@ -224,7 +220,7 @@ const AccountDetailsPage: React.FC = () => {
                   {account.transactions.map((trx: any) => (
                     <li key={trx.id} className="flex justify-between items-center bg-lightGray dark:bg-gray-700 p-3 rounded-lg shadow-sm">
                       <div className="flex items-center space-x-3">
-                        {trx.amount >= 0 ? <DollarSign className="text-secondary" size={20}/> : <XCircle className="text-redError" size={20}/>}
+                        {trx.amount >= 0 ? <DollarSign className="text-secondary" size={20}/> : <XCircle className="text-redError" size={20}/>} 
                         <span className="font-semibold text-darkGray dark:text-gray-100">{trx.description}</span>
                       </div>
                       <span className={`${trx.amount >= 0 ? 'text-secondary' : 'text-redError'} font-bold`}>
@@ -287,3 +283,5 @@ const AccountDetailsPage: React.FC = () => {
     </Layout>
   );
 }
+
+export default Page;

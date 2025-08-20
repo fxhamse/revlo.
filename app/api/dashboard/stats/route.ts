@@ -30,27 +30,27 @@ export async function GET() {
       Overdue: '#E74C3C',
       Upcoming: '#9B59B6',
     };
-    const statusCounts: Array<{ status: string; _count: { status: number } }> = await prisma.project.groupBy({
+    const statusCounts = await prisma.project.groupBy({
       by: ['status'],
       _count: { status: true },
     });
-    const projectStatusBreakdown = statusCounts.map((s: { status: string; _count: { status: number } }) => ({
+    const projectStatusBreakdown = statusCounts.map((s) => ({
       name: s.status,
       value: s._count.status,
       color: statusColors[s.status as keyof typeof statusColors] || '#A0A0A0',
     }));
 
     // Recent activities
-    const recentActivitiesRaw: Array<{ id: string; type: string; description: string; amount?: number; date: string; user?: string }> = await prisma.notification.findMany({
+    const recentActivitiesRaw = await prisma.notification.findMany({
       orderBy: { date: 'desc' },
       take: 10,
     });
     const recentActivities = recentActivitiesRaw.map((a) => ({
       id: a.id,
       type: a.type,
-      description: a.description,
+      description: a.message, // Use 'message' field from notification
       amount: undefined,
-      date: a.date,
+      date: a.date instanceof Date ? a.date.toISOString() : a.date,
       user: a.user || 'System',
     }));
 

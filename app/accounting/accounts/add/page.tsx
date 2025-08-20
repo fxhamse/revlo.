@@ -16,6 +16,8 @@ export default function AddAccountPage() {
   const [name, setName] = useState('');
   const [type, setType] = useState(''); // e.g., "BANK", "CASH", "MOBILE_MONEY"
   const [balance, setBalance] = useState<number | ''>(''); // Initial balance
+  const balanceOptions = [0, 100, 500, 1000, 5000, 10000, 'custom'];
+  const [balanceMode, setBalanceMode] = useState<'option' | 'custom'>('option');
   const [currency, setCurrency] = useState('ETB'); // Default currency
 
   const [loading, setLoading] = useState(false);
@@ -141,20 +143,44 @@ export default function AddAccountPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
             <label htmlFor="balance" className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Balance ($) <span className="text-xs text-mediumGray">(optional)</span></label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
+            <div className="relative">
+              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
+              {balanceMode === 'option' ? (
+                <select
+                  id="balance"
+                  value={balance === '' ? '' : balance}
+                  onChange={e => {
+                    if (e.target.value === 'custom') {
+                      setBalanceMode('custom');
+                      setBalance('');
+                    } else {
+                      setBalance(Number(e.target.value));
+                    }
+                  }}
+                  className={`w-full p-3 pl-10 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 ${validationErrors.balance ? 'border-redError' : 'border-lightGray dark:border-gray-700'}`}
+                >
+                  <option value="">-- Dooro Balance --</option>
+                  {balanceOptions.map(opt => (
+                    <option key={opt} value={opt}>{opt === 'custom' ? 'Custom Value...' : `$${opt}`}</option>
+                  ))}
+                </select>
+              ) : (
                 <input
                   type="number"
-                  id="balance"
+                  id="balance-custom"
                   value={balance}
-                  onChange={(e) => setBalance(e.target.value === '' ? '' : parseFloat(e.target.value))}
-                  placeholder="Tusaale: 10000.00 (ama banaan ka tag)"
+                  onChange={e => setBalance(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                  placeholder="Geli Balance Custom..."
                   min={0}
                   className={`w-full p-3 pl-10 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 placeholder-mediumGray focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 ${validationErrors.balance ? 'border-redError' : 'border-lightGray dark:border-gray-700'}`}
                 />
-                <p className="text-xs text-mediumGray mt-1">Waa la ogol yahay in account la abuuro asagoo balance-kiisu eber yahay ama banaan yahay.</p>
-              </div>
-              {validationErrors.balance && <p className="text-redError text-sm mt-1 flex items-center"><InfoIcon size={16} className="mr-1"/>{validationErrors.balance}</p>}
+              )}
+              {balanceMode === 'custom' && (
+                <button type="button" className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary text-xs underline" onClick={() => setBalanceMode('option')}>Back to options</button>
+              )}
+              <p className="text-xs text-mediumGray mt-1">Waa la ogol yahay in account la abuuro asagoo balance-kiisu eber yahay ama banaan yahay.</p>
+            </div>
+            {validationErrors.balance && <p className="text-redError text-sm mt-1 flex items-center"><InfoIcon size={16} className="mr-1"/>{validationErrors.balance}</p>}
             </div>
             <div>
               <label htmlFor="currency" className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Currency <span className="text-redError">*</span></label>

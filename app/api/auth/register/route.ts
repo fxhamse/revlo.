@@ -68,7 +68,7 @@ export async function POST(request: Request) {
         fullName,
         email,
         password: hashedPassword, // Include the hashed password
-        role: USER_ROLES.ADMIN, // User-ka ugu horreeya ee shirkad cusub waa ADMIN
+        role: 'ADMIN', // Cast to Role enum string
         companyId: company.id,
       },
     });

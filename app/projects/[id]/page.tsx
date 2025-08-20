@@ -122,8 +122,20 @@ const ProjectDetailsPage: React.FC = () => {
     // --- View Toggle Component ---
     const ViewSwitcher = ({ tabKey }: { tabKey: 'overview' | 'expenses' | 'materials' }) => (
         <div className="flex items-center gap-1 bg-lightGray p-1 rounded-lg">
-            <button onClick={() => setViewModes(prev => ({...prev, [tabKey]: 'list'}))} className={`p-1.5 rounded-md ${viewModes[tabKey] === 'list' ? 'bg-white shadow' : 'text-mediumGray'}`}><List size={18}/></button>
-            <button onClick={() => setViewModes(prev => ({...prev, [tabKey]: 'board'}))} className={`p-1.5 rounded-md ${viewModes[tabKey] === 'board' ? 'bg-white shadow' : 'text-mediumGray'}`}><LayoutGrid size={18}/></button>
+            <button
+                onClick={() => setViewModes(prev => ({...prev, [tabKey]: 'list'}))}
+                className={`p-1.5 rounded-md ${viewModes[tabKey] === 'list' ? 'bg-white shadow' : 'text-mediumGray'}`}
+                title="List View"
+            >
+                <List size={18}/>
+            </button>
+            <button
+                onClick={() => setViewModes(prev => ({...prev, [tabKey]: 'board'}))}
+                className={`p-1.5 rounded-md ${viewModes[tabKey] === 'board' ? 'bg-white shadow' : 'text-mediumGray'}`}
+                title="Board View"
+            >
+                <LayoutGrid size={18}/>
+            </button>
         </div>
     );
 

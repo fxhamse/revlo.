@@ -28,16 +28,13 @@ interface Vendor {
   transactions: { id: string; description: string; amount: number; type: string; transactionDate: string; }[];
 }
 
-const VendorDetailsPage: React.FC = () => {
+export default function Page() {
   const { id } = useParams(); // Get vendor ID from URL
   const router = useRouter(); // For redirection after delete
   const [vendor, setVendor] = useState<Vendor | null>(null); // State for vendor data
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Overview'); // For tab navigation
   const [toastMessage, setToastMessage] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
-
-
-  // --- API Functions ---
   const fetchVendorDetails = async () => {
     setLoading(true);
     try {
@@ -258,6 +255,4 @@ const VendorDetailsPage: React.FC = () => {
       )}
     </Layout>
   );
-};
-
-export default VendorDetailsPage;
+}

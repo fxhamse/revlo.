@@ -165,17 +165,12 @@ const Sidebar: React.FC<SidebarProps> = ({
             className={`
               h-full bg-darkGray dark:bg-gray-900 text-white flex flex-col shadow-xl
               w-60 transition-transform duration-300 ease-in-out
-              rounded-tr-sm rounded-br-sm
+              rounded-tr-[0.2rem] rounded-br-[0.2rem]
               fixed top-0 left-0 z-50 border-r border-gray-800
               ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+              bg-[linear-gradient(135deg,_#233047_80%,_#1e293b_100%)]
+              min-w-[240px] max-w-[240px]
             `}
-            style={{
-              minWidth: 240,
-              maxWidth: 240,
-              borderTopRightRadius: '0.2rem',
-              borderBottomRightRadius: '0.2rem',
-              background: 'linear-gradient(135deg, #233047 80%, #1e293b 100%)',
-            }}
           >
             {/* Top: Logo, Close Button */}
             <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700">
@@ -270,19 +265,13 @@ const Sidebar: React.FC<SidebarProps> = ({
     <aside
       className={`
         h-full bg-darkGray dark:bg-gray-900 text-white flex flex-col shadow-xl
-        ${collapsed ? 'w-16' : 'w-60'}
+        ${collapsed ? 'w-16 min-w-[64px] max-w-[64px]' : 'w-60 min-w-[240px] max-w-[240px]'}
         transition-all duration-300 ease-in-out
-        rounded-tr-sm rounded-br-sm
+        rounded-tr-[0.2rem] rounded-br-[0.2rem]
         fixed md:static top-0 left-0 z-40
         border-r border-gray-800
+        bg-[linear-gradient(135deg,_#233047_80%,_#1e293b_100%)]
       `}
-      style={{
-        minWidth: collapsed ? 64 : 240,
-        maxWidth: collapsed ? 64 : 240,
-        borderTopRightRadius: '0.2rem',
-        borderBottomRightRadius: '0.2rem',
-        background: 'linear-gradient(135deg, #233047 80%, #1e293b 100%)',
-      }}
     >
       {/* Top: Logo only (collapse button waa in laga saaraa oo Topbar laga xakameeyaa) */}
       <div className="flex items-center justify-center px-4 py-4 border-b border-gray-700">
