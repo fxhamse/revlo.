@@ -1,4 +1,4 @@
-// app/accounting/accounts/page.tsx - Accounts List Page (10000% Design - API Integration)
+//app/accounting/accounts/page.tsx - Accounts List Page (10000% Design - API Integration)
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -38,12 +38,12 @@ const AccountRow: React.FC<{ account: Account; onEdit: (id: string) => void; onD
         <Link href={`/accounting/accounts/${account.id}`} className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors duration-200" title="View Details">
           <Eye size={18} />
         </Link>
-        <button onClick={() => onEdit(account.id)} className="p-2 rounded-full bg-accent/10 text-accent hover:bg-accent hover:text-white transition-colors duration-200" title="Edit Account">
-          <Edit size={18} />
-        </button>
-        <button onClick={() => onDelete(account.id)} className="p-2 rounded-full bg-redError/10 text-redError hover:bg-redError hover:text-white transition-colors duration-200" title="Delete Account">
-          <Trash2 size={18} />
-        </button>
+          <button onClick={() => onEdit(account.id)} className="p-2 rounded-full bg-accent/10 text-accent hover:bg-accent hover:text-white transition-colors duration-200" title="Edit Account" aria-label="Edit Account">
+            <Edit size={18} />
+          </button>
+          <button onClick={() => onDelete(account.id)} className="p-2 rounded-full bg-redError/10 text-redError hover:bg-redError hover:text-white transition-colors duration-200" title="Delete Account" aria-label="Delete Account">
+            <Trash2 size={18} />
+          </button>
       </div>
     </td>
   </tr>
@@ -57,10 +57,10 @@ const AccountCard: React.FC<{ account: Account; onEdit: (id: string) => void; on
         <Banknote size={20} className="text-primary"/> <span>{account.name}</span>
       </h4>
       <div className="flex space-x-2 flex-shrink-0">
-        <button onClick={() => onEdit(account.id)} className="p-1 rounded-full bg-accent/10 text-accent hover:bg-accent hover:text-white transition-colors duration-200" title="Edit">
+        <button onClick={() => onEdit(account.id)} className="p-1 rounded-full bg-accent/10 text-accent hover:bg-accent hover:text-white transition-colors duration-200" title="Edit Account" aria-label="Edit Account">
           <Edit size={16} />
         </button>
-        <button onClick={() => onDelete(account.id)} className="p-1 rounded-full bg-redError/10 text-redError hover:bg-redError hover:text-white transition-colors duration-200" title="Delete">
+        <button onClick={() => onDelete(account.id)} className="p-1 rounded-full bg-redError/10 text-redError hover:bg-redError hover:text-white transition-colors duration-200" title="Delete Account" aria-label="Delete Account">
           <Trash2 size={16} />
         </button>
       </div>
@@ -223,7 +223,10 @@ export default function AccountsPage() {
         {/* Filter by Type */}
         <div className="relative w-full md:w-48">
           <Filter size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" />
+          <label htmlFor="filterType" className="sr-only">Filter by Account Type</label>
           <select
+            id="filterType"
+            title="Filter by Account Type"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -237,7 +240,10 @@ export default function AccountsPage() {
         {/* Filter by Currency */}
         <div className="relative w-full md:w-48">
           <Coins size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" />
+          <label htmlFor="filterCurrency" className="sr-only">Filter by Currency</label>
           <select
+            id="filterCurrency"
+            title="Filter by Currency"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterCurrency}
             onChange={(e) => setFilterCurrency(e.target.value)}
@@ -250,10 +256,10 @@ export default function AccountsPage() {
         </div>
         {/* View Mode Toggle */}
         <div className="flex space-x-2 w-full md:w-auto justify-center">
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
+            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`} title="List View" aria-label="List View">
                 <List size={20} />
             </button>
-            <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
+            <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`} title="Cards View" aria-label="Cards View">
                 <LayoutGrid size={20} />
             </button>
         </div>
@@ -290,9 +296,9 @@ export default function AccountsPage() {
           </div>
           {/* Pagination Placeholder */}
           <div className="p-4 flex justify-between items-center border-t border-lightGray dark:border-gray-700">
-              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Hore</button>
+              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition" title="Previous Page" aria-label="Previous Page">Hore</button>
               <span className="text-sm text-darkGray dark:text-gray-100">Page 1 of {Math.ceil(filteredAccounts.length / 10) || 1}</span>
-              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Next</button>
+              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition" title="Next Page" aria-label="Next Page">Next</button>
           </div>
         </div>
       ) : ( /* Cards View */
