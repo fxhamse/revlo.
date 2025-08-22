@@ -375,6 +375,7 @@ export default function ExpensesPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
+            title="Dooro category-ga kharashka"
           >
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
@@ -389,6 +390,7 @@ export default function ExpensesPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterProject}
             onChange={(e) => setFilterProject(e.target.value)}
+            title="Dooro mashruuca"
           >
             {projects.map(proj => <option key={proj} value={proj}>{proj}</option>)}
           </select>
@@ -403,6 +405,7 @@ export default function ExpensesPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterPaidFrom}
             onChange={(e) => setFilterPaidFrom(e.target.value)}
+            title="Dooro account-ka laga bixiyay"
           >
             {paidFromOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
           </select>
@@ -417,6 +420,7 @@ export default function ExpensesPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterDateRange}
             onChange={(e) => setFilterDateRange(e.target.value)}
+            title="Dooro xilliga taariikhda"
           >
             {dateRanges.map(range => <option key={range} value={range}>{range}</option>)}
           </select>
@@ -426,12 +430,12 @@ export default function ExpensesPage() {
         </div>
         {/* View Mode Toggle */}
         <div className="flex space-x-2 w-full md:w-auto justify-center">
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
-                <List size={20} />
-            </button>
-            <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
-                <LayoutGrid size={20} />
-            </button>
+      <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`} title="List View">
+        <List size={20} />
+      </button>
+      <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`} title="Cards View">
+        <LayoutGrid size={20} />
+      </button>
         </div>
       </div>
 
@@ -484,9 +488,9 @@ export default function ExpensesPage() {
           </div>
           {/* Pagination Placeholder */}
           <div className="p-4 flex justify-between items-center border-t border-lightGray dark:border-gray-700">
-              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Hore</button>
+              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition" title="Previous page">Hore</button>
               <span className="text-sm text-darkGray dark:text-gray-100">Page 1 of {Math.ceil(filteredExpenses.length / 10) || 1}</span>
-              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Next</button>
+              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition" title="Next page">Next</button>
           </div>
         </div>
       ) : ( /* Cards View */

@@ -175,6 +175,10 @@ export default function InventoryProjectsPage() {
           <button onClick={() => router.back()} className="bg-lightGray dark:bg-gray-700 rounded-full p-2 mr-2">
             <ArrowLeft size={24} className="text-primary" />
           </button>
+          <button onClick={() => router.back()} className="bg-lightGray dark:bg-gray-700 rounded-full p-2 mr-2" type="button" title="Back">
+          </button>
+          <button onClick={() => router.back()} className="bg-lightGray dark:bg-gray-700 rounded-full p-2 mr-2" title="Back">
+          </button>
           <h1 className="text-2xl font-bold text-darkGray dark:text-gray-100">Projects Using Inventory</h1>
         </div>
         <div className="w-full flex flex-col items-center">
@@ -219,6 +223,7 @@ export default function InventoryProjectsPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterProject}
             onChange={(e) => setFilterProject(e.target.value)}
+            title="Dooro mashruuca"
           >
             {projects.map(proj => <option key={proj} value={proj}>{proj}</option>)}
           </select>
@@ -233,6 +238,7 @@ export default function InventoryProjectsPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
+            title="Dooro category-ga alaabta"
           >
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
@@ -247,6 +253,7 @@ export default function InventoryProjectsPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterDateRange}
             onChange={(e) => setFilterDateRange(e.target.value)}
+            title="Dooro xilliga taariikhda"
           >
             {dateRanges.map(range => <option key={range} value={range}>{range}</option>)}
           </select>
@@ -256,12 +263,12 @@ export default function InventoryProjectsPage() {
         </div>
         {/* View Mode Toggle */}
         <div className="flex space-x-2 w-full md:w-auto justify-center">
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
-                <List size={20} />
-            </button>
-            <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
-                <LayoutGrid size={20} />
-            </button>
+            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`} title="List View">
+        <List size={20} />
+      </button>
+      <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`} title="Cards View">
+        <LayoutGrid size={20} />
+      </button>
         </div>
       </div>
 

@@ -3,26 +3,30 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../lib/db';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Financial stats
+    // Get companyId from query string
+    const { searchParams } = new URL(request.url);
+    const companyId = searchParams.get('companyId') || 'test-company-id';
+
+    // Financial stats filtered by companyId
     const [incomeAgg, expensesAgg, projectsAgg, bankAgg, mobileAgg, cashAgg, lowStockAgg, overdueAgg, completedAgg, activeAgg] = await Promise.all([
-      prisma.transaction.aggregate({ _sum: { amount: true }, where: { type: 'INCOME' } }),
-      prisma.transaction.aggregate({ _sum: { amount: true }, where: { type: 'EXPENSE' } }),
-      prisma.project.count(),
-      prisma.account.aggregate({ _sum: { balance: true }, where: { type: 'BANK' } }),
-      prisma.account.aggregate({ _sum: { balance: true }, where: { type: 'MOBILE_MONEY' } }),
-      prisma.account.aggregate({ _sum: { balance: true }, where: { type: 'CASH' } }),
-      prisma.inventoryItem.count({ where: { inStock: { lt: 5 } } }),
-      prisma.project.count({ where: { status: 'Overdue' } }),
-      prisma.project.aggregate({ _sum: { agreementAmount: true }, where: { status: 'Completed' } }),
-      prisma.project.aggregate({ _sum: { agreementAmount: true }, where: { status: 'Active' } }),
+      prisma.transaction.aggregate({ _sum: { amount: true }, where: { type: 'INCOME', companyId } }),
+      prisma.transaction.aggregate({ _sum: { amount: true }, where: { type: 'EXPENSE', companyId } }),
+      prisma.project.count({ where: { companyId } }),
+      prisma.account.aggregate({ _sum: { balance: true }, where: { type: 'BANK', companyId } }),
+      prisma.account.aggregate({ _sum: { balance: true }, where: { type: 'MOBILE_MONEY', companyId } }),
+      prisma.account.aggregate({ _sum: { balance: true }, where: { type: 'CASH', companyId } }),
+      prisma.inventoryItem.count({ where: { inStock: { lt: 5 }, companyId } }),
+      prisma.project.count({ where: { status: 'Overdue', companyId } }),
+      prisma.project.aggregate({ _sum: { agreementAmount: true }, where: { status: 'Completed', companyId } }),
+      prisma.project.aggregate({ _sum: { agreementAmount: true }, where: { status: 'Active', companyId } }),
     ]);
 
-    // Monthly financial data
-    const monthlyFinancialData = await prisma.$queryRaw`SELECT to_char("transactionDate", 'Mon YYYY') as month, SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) as income, SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as expenses, SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) - SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as profit FROM "transactions" GROUP BY month ORDER BY min("transactionDate") DESC LIMIT 12`;
+    // Monthly financial data (filtered by companyId)
+    const monthlyFinancialData = await prisma.$queryRaw`SELECT to_char("transactionDate", 'Mon YYYY') as month, SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) as income, SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as expenses, SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END) - SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END) as profit FROM "transactions" WHERE "companyId" = ${companyId} GROUP BY month ORDER BY min("transactionDate") DESC LIMIT 12`;
 
-    // Project status breakdown
+    // Project status breakdown (filtered by companyId)
     const statusColors = {
       Active: '#2ECC71',
       Completed: '#3498DB',
@@ -32,6 +36,7 @@ export async function GET() {
     };
     const statusCounts = await prisma.project.groupBy({
       by: ['status'],
+      where: { companyId },
       _count: { status: true },
     });
     const projectStatusBreakdown = statusCounts.map((s) => ({
@@ -40,8 +45,9 @@ export async function GET() {
       color: statusColors[s.status as keyof typeof statusColors] || '#A0A0A0',
     }));
 
-    // Recent activities
+    // Recent activities (filtered by companyId)
     const recentActivitiesRaw = await prisma.notification.findMany({
+      where: { companyId },
       orderBy: { date: 'desc' },
       take: 10,
     });

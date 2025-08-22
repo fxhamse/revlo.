@@ -34,6 +34,11 @@ export default function ExpensesImportPage() {
   const [sheetNames, setSheetNames] = useState<string[]>([]);
   const [selectedSheet, setSelectedSheet] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Get companyId from user context (if available)
+  let companyId = '';
+  try {
+    companyId = require('../../../components/providers/UserProvider').useUser().user?.companyId || '';
+  } catch {}
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -147,32 +152,31 @@ export default function ExpensesImportPage() {
       expectedColumns.forEach(expCol => {
         const csvHeader = columnMapping[expCol.key];
         const value = row[csvHeader];
-        
         if (expCol.required && (!value || value.trim() === '')) {
           isValidRow = false;
           rowErrors.push(`Column-ka '${expCol.label}' waa waajib.`);
         }
         record[expCol.key] = value; // Assign mapped value
       });
-
+      // Add companyId to each record
+      record.companyId = companyId;
       if (!isValidRow) {
-        setImportErrors(prev => [...prev, { row: rowIndex + 1, errors: rowErrors }]);
-        return null; // Skip this row
+        return { row: rowIndex + 1, message: rowErrors.join(', ') };
       }
       return record;
-    }).filter(rec => rec !== null); // Filter out invalid rows
+    });
+    // Filter out invalid rows for import
+    const validRecords = recordsToImport.filter(rec => !rec.message);
+    const errorRecords = recordsToImport.filter(rec => rec.message);
+    setImportErrors(errorRecords);
 
     console.log('Records to import:', recordsToImport);
 
     // --- API Integration ---
     try {
-      // Prepare CSV as file for FormData
-      const headersRow = expectedColumns.map(col => col.key).join(',');
-      const csvRows = recordsToImport.map(row => expectedColumns.map(col => row[col.key] || '').join(','));
-      const csvContent = [headersRow, ...csvRows].join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv' });
+      // Prepare JSON for FormData (for large bulk import)
       const formData = new FormData();
-      formData.append('file', blob, 'expenses_import.csv');
+      formData.append('expenses', JSON.stringify(validRecords));
 
       const response = await fetch('/api/expenses/bulk-import', {
         method: 'POST',
@@ -184,7 +188,7 @@ export default function ExpensesImportPage() {
         throw new Error(data.message || 'Failed to import expenses');
       }
 
-      setToastMessage({ message: data.message || `Si guul leh ayaa loo dhoofiyay ${recordsToImport.length} kharash!`, type: 'success' });
+      setToastMessage({ message: data.message || `Si guul leh ayaa loo dhoofiyay ${validRecords.length} kharash!`, type: 'success' });
       setCurrentStep(3); // Move to success step
       if (data.errors) setImportErrors(data.errors);
     } catch (error: any) {
@@ -286,6 +290,7 @@ export default function ExpensesImportPage() {
                           value={columnMapping[col.key] || ''} 
                           onChange={(e) => handleColumnMapChange(col.key, e.target.value)}
                           className="w-full p-2 border border-lightGray dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-primary"
+                          title={`Dooro column-ka CSV ee la xirinayo beerta '${col.label}'`}
                         >
                           <option value="">-- Dooro Column --</option>
                           {headers.map(header => (

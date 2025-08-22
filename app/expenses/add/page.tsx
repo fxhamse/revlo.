@@ -595,6 +595,7 @@ const [consultancyFee, setConsultancyFee] = useState('');
                   setCompanyExpenseType(e.target.value);
                   setCategory(e.target.value ? 'Company Expense' : '');
                 }}
+                title="Dooro Nooca Kharashka Shirkadda"
               >
                 {companyExpenseCategories.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -606,6 +607,7 @@ const [consultancyFee, setConsultancyFee] = useState('');
                 className="w-full p-3 border border-lightGray dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 mb-4"
                 value={category}
                 onChange={e => setCategory(e.target.value)}
+                title="Dooro Nooca Kharashka Mashruuca"
               >
                 {projectExpenseCategories.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -695,7 +697,7 @@ const [consultancyFee, setConsultancyFee] = useState('');
               {/* Project select */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Mashruuca la xariira</label>
-                <select value={selectedProject} onChange={e => setSelectedProject(e.target.value)} className="input input-bordered w-full" required>
+                <select value={selectedProject} onChange={e => setSelectedProject(e.target.value)} className="input input-bordered w-full" required title="Dooro Mashruuca">
                   <option value="">Dooro Mashruuca</option>
                   {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
@@ -703,7 +705,7 @@ const [consultancyFee, setConsultancyFee] = useState('');
               {/* Account select */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Akoonka lacagta laga jarayo</label>
-                <select value={paidFrom} onChange={e => setPaidFrom(e.target.value)} className="input input-bordered w-full" required>
+                <select value={paidFrom} onChange={e => setPaidFrom(e.target.value)} className="input input-bordered w-full" required title="Dooro Akoonka">
                   <option value="">Dooro Akoonka</option>
                   {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
@@ -718,7 +720,7 @@ const [consultancyFee, setConsultancyFee] = useState('');
               {materials.map((material, index) => (
                 <div key={material.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-3 rounded-lg bg-white dark:bg-gray-700 border border-lightGray dark:border-gray-600 relative">
                   {materials.length > 1 && (
-                    <button type="button" onClick={() => handleRemoveMaterial(material.id)} className="absolute top-2 right-2 text-redError hover:text-red-700 transition-colors">
+                    <button type="button" title="Tirtir Alaab" onClick={() => handleRemoveMaterial(material.id)} className="absolute top-2 right-2 text-redError hover:text-red-700 transition-colors">
                       <MinusCircle size={20} />
                     </button>
                   )}
@@ -997,30 +999,30 @@ const [consultancyFee, setConsultancyFee] = useState('');
               <h3 className="text-lg font-bold text-primary dark:text-blue-300 mb-2">Faahfaahinta Kirada Qalabka</h3>
               <div>
                 <label className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Magaca Qalabka <span className="text-redError">*</span></label>
-                <input type="text" value={equipmentName} onChange={e => setEquipmentName(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required />
+                <input type="text" value={equipmentName} onChange={e => setEquipmentName(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required placeholder="Magaca Qalabka" title="Magaca Qalabka" />
               </div>
               <div>
                 <label className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Muddada Kirada <span className="text-redError">*</span></label>
-                <input type="text" value={rentalPeriod} onChange={e => setRentalPeriod(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required />
+                <input type="text" value={rentalPeriod} onChange={e => setRentalPeriod(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required placeholder="Muddada Kirada" title="Muddada Kirada" />
               </div>
               <div>
                 <label className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Lacagta Kirada <span className="text-redError">*</span></label>
-                <input type="number" value={rentalFee} onChange={e => setRentalFee(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required />
+                <input type="number" value={rentalFee} onChange={e => setRentalFee(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required placeholder="Lacagta Kirada" title="Lacagta Kirada" />
               </div>
               <div>
                 <label className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Magaca Kiriyaha <span className="text-redError">*</span></label>
-                <input type="text" value={supplierName} onChange={e => setSupplierName(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required />
+                <input type="text" value={supplierName} onChange={e => setSupplierName(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required placeholder="Magaca Kiriyaha" title="Magaca Kiriyaha" />
               </div>
               <div>
                 <label className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Mashruuca loo kireeyay <span className="text-redError">*</span></label>
-                <select value={selectedProject} onChange={e => setSelectedProject(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required>
+                <select value={selectedProject} onChange={e => setSelectedProject(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required title="Dooro Mashruuca">
                   <option value="">Dooro Mashruuca</option>
                   {projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
                 <label className="block text-md font-medium text-darkGray dark:text-gray-300 mb-2">Bankiga laga jari doono <span className="text-redError">*</span></label>
-                <select value={selectedBankAccount} onChange={e => setSelectedBankAccount(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required>
+                <select value={selectedBankAccount} onChange={e => setSelectedBankAccount(e.target.value)} className="w-full p-3 border rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100" required title="Dooro Bank Account">
                   <option value="">Dooro Bank Account</option>
                   {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
@@ -1393,7 +1395,7 @@ const [consultancyFee, setConsultancyFee] = useState('');
                     <div key={material.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 p-3 rounded-lg bg-white dark:bg-gray-700 border border-lightGray dark:border-gray-600 relative">
                       {/* Remove button for multiple items */}
                       {materials.length > 1 && (
-                        <button type="button" onClick={() => handleRemoveMaterial(material.id)} className="absolute top-2 right-2 text-redError hover:text-red-700 transition-colors">
+                        <button type="button" title="Tirtir Alaab" onClick={() => handleRemoveMaterial(material.id)} className="absolute top-2 right-2 text-redError hover:text-red-700 transition-colors">
                           <MinusCircle size={20} />
                         </button>
                       )}

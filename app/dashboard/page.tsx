@@ -180,25 +180,26 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const { user } = require('../../components/providers/UserProvider').useUser();
 
   useEffect(() => {
     async function fetchStats() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/dashboard/stats");
+        const companyId = user?.companyId || 'test-company-id';
+        const res = await fetch(`/api/dashboard/stats?companyId=${companyId}`);
         if (!res.ok) throw new Error("Server error");
         const json = await res.json();
         setStats(json);
-      } catch (err: any) {
-        setError(err.message || "Error fetching dashboard stats");
+      } catch (err) {
+        setError((err as any).message || "Error fetching dashboard stats");
       } finally {
         setLoading(false);
       }
     }
-    fetchStats();
-  }, []);
+    if (user?.companyId) fetchStats();
+  }, [user?.companyId]);
 
   if (loading) return <div className="flex items-center justify-center min-h-[400px]"><span className="text-primary text-lg">Dashboard loading...</span></div>;
   if (error) return <div className="text-red-500 text-center p-6">{error}</div>;
@@ -323,57 +324,57 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Monthly Financial Trend Chart */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
-            <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">Dhaqdhaqaaqa Lacagta Bishiiba</h3>
-            <div style={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer>
-                    <LineChart data={monthlyFinancialData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" vertical={false} />
-                        <XAxis dataKey="month" stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
-                        <YAxis stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
-                        <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }} labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }} itemStyle={{ color: '#2C3E50' }} />
-                        <Legend />
-                        <Line type="monotone" dataKey="income" stroke={CHART_COLORS[1]} name="Dakhliga" />
-                        <Line type="monotone" dataKey="expenses" stroke={CHART_COLORS[3]} name="Kharashyada" />
-                        <Line type="monotone" dataKey="profit" stroke={CHART_COLORS[0]} name="Net Faa'iidada" />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
-        </div>
-
-        {/* Project Status Breakdown Pie Chart */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
-            <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">Qaybinta Xaaladda Mashruuca</h3>
-            <div style={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer>
-                    <PieChart>
-                        <Pie
-                            data={projectStatusBreakdown}
-                            cx="50%"
-                            cy="50%"
-                            labelLine={false}
-                            label={renderCustomizedLabel}
-                            outerRadius={120}
-                            dataKey="value"
-                        >
-                            {projectStatusBreakdown.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                        <Tooltip 
-                            contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }}
-                            labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }}
-                            itemStyle={{ color: '#2C3E50' }}
-                        />
-                        <Legend align="right" verticalAlign="middle" layout="vertical" wrapperStyle={{ paddingLeft: '20px' }} />
-                    </PieChart>
-                </ResponsiveContainer>
-            </div>
-        </div>
+    {/* Charts Section */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    {/* Monthly Financial Trend Chart */}
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
+      <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">Dhaqdhaqaaqa Lacagta Bishiiba</h3>
+      <div className="chart-container">
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={monthlyFinancialData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" vertical={false} />
+            <XAxis dataKey="month" stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
+            <YAxis stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
+            <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }} labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }} itemStyle={{ color: '#2C3E50' }} />
+            <Legend />
+            <Line type="monotone" dataKey="income" stroke={CHART_COLORS[1]} name="Dakhliga" />
+            <Line type="monotone" dataKey="expenses" stroke={CHART_COLORS[3]} name="Kharashyada" />
+            <Line type="monotone" dataKey="profit" stroke={CHART_COLORS[0]} name="Net Faa'iidada" />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
+    </div>
+
+    {/* Project Status Breakdown Pie Chart */}
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
+      <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">Qaybinta Xaaladda Mashruuca</h3>
+      <div className="chart-container">
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={projectStatusBreakdown}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={renderCustomizedLabel}
+              outerRadius={120}
+              dataKey="value"
+            >
+              {projectStatusBreakdown.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip 
+              contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }}
+              labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }}
+              itemStyle={{ color: '#2C3E50' }}
+            />
+            <Legend align="right" verticalAlign="middle" layout="vertical" wrapperStyle={{ paddingLeft: '20px' }} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+    </div>
 
       {/* Recent Activity Section */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
@@ -384,7 +385,7 @@ export default function DashboardPage() {
               <ActivityItem key={activity.id} activity={activity} />
             ))
           ) : (
-            <p className="text-mediumGray dark:text-gray-400">Ma jiraan dhaqdhaqaaq dhawaan ah.</p>
+            <li className="text-mediumGray dark:text-gray-400">Ma jiraan dhaqdhaqaaq dhawaan ah.</li>
           )}
         </ul>
         <Link href="/accounting" className="mt-4 block text-primary hover:underline text-sm font-medium">Fiiri Dhammaan Dhaqdhaqaaqa &rarr;</Link>

@@ -82,7 +82,13 @@ export async function GET(req: Request) {
       },
     });
 
-    // Calculate totals
+  // Define debts and receivables arrays
+  const debtsOwed = companyDebts.filter(t => t.type === 'DEBT_TAKEN');
+  const debtsRepaid = companyDebts.filter(t => t.type === 'DEBT_REPAID');
+  const receivables = clientReceivables.filter(t => t.type === 'DEBT_TAKEN');
+  const receivablesRepaid = clientReceivables.filter(t => t.type === 'DEBT_REPAID');
+
+  // Calculate totals
   const totalDebtsOwed = debtsOwed.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
   const totalDebtsRepaid = debtsRepaid.reduce((sum: number, t: any) => sum + Number(t.amount), 0);
   const totalReceivables = receivables.reduce((sum: number, t: any) => sum + Number(t.amount), 0);

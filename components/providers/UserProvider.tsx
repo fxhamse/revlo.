@@ -33,13 +33,13 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (session?.user) {
       setUser({
-        id: session.user.id,
+        id: (session.user as any).id ?? '',
         fullName: session.user.name || '',
-        email: session.user.email,
-        role: session.user.role,
-        companyId: session.user.companyId,
-        companyName: session.user.companyName,
-        avatar: session.user.avatar,
+        email: session.user.email ?? '',
+        role: (session.user as any).role ?? '',
+        companyId: (session.user as any).companyId,
+        companyName: (session.user as any).companyName,
+        avatar: (session.user as any).avatar,
       });
     } else if (status === 'unauthenticated') {
       setUser(null);

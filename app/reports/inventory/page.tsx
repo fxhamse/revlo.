@@ -209,7 +209,7 @@ export default function InventoryReportPage() {
   });
 
   // Filter options
-  const categories = ['All', ...new Set(inventoryItems.map(item => item.category))];
+  const categories = ['All', ...Array.from(new Set(inventoryItems.map(item => item.category)))];
   const stockStatuses = ['All', 'Low Stock', 'In Stock'];
   const dateRanges = ['All', 'Last 30 Days', 'This Month', 'This Quarter', 'This Year'];
 
@@ -242,10 +242,10 @@ export default function InventoryReportPage() {
           Inventory Report
         </h1>
         <div className="flex space-x-3">
-          <button className="bg-primary text-white py-2.5 px-6 rounded-lg font-bold text-lg hover:bg-blue-700 transition duration-200 shadow-md flex items-center">
+          <button className="bg-primary text-white py-2.5 px-6 rounded-lg font-bold text-lg hover:bg-blue-700 transition duration-200 shadow-md flex items-center" title="Download PDF">
             <Download size={20} className="mr-2" /> Soo Deji PDF
           </button>
-          <button className="bg-secondary text-white py-2.5 px-6 rounded-lg font-bold text-lg hover:bg-green-600 transition duration-200 shadow-md flex items-center">
+          <button className="bg-secondary text-white py-2.5 px-6 rounded-lg font-bold text-lg hover:bg-green-600 transition duration-200 shadow-md flex items-center" title="Export CSV">
             <Upload size={20} className="mr-2" /> Dhoofi CSV
           </button>
         </div>
@@ -290,6 +290,7 @@ export default function InventoryReportPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
+            title="Dooro category-ga alaabta"
           >
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
@@ -304,6 +305,7 @@ export default function InventoryReportPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterStockStatus}
             onChange={(e) => setFilterStockStatus(e.target.value)}
+            title="Dooro status-ka stock-ga"
           >
             {stockStatuses.map(status => <option key={status} value={status}>{status}</option>)}
           </select>
@@ -318,6 +320,7 @@ export default function InventoryReportPage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterDateRange}
             onChange={(e) => setFilterDateRange(e.target.value)}
+            title="Dooro xilliga taariikhda"
           >
             {dateRanges.map(range => <option key={range} value={range}>{range}</option>)}
           </select>
@@ -329,6 +332,7 @@ export default function InventoryReportPage() {
         <div className="flex space-x-2 w-full md:w-auto justify-center">
             <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
                 <List size={20} />
+                title="List View"
             </button>
             <button onClick={() => setViewMode('charts')} className={`p-2 rounded-lg ${viewMode === 'charts' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
                 <BarChart size={20} />
@@ -379,58 +383,57 @@ export default function InventoryReportPage() {
               <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Next</button>
           </div>
         </div>
-      ) : viewMode === 'cards' ? ( /* Cards View */
+      ) : viewMode === 'cards' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
             {filteredItems.map(item => (
                 <InventoryItemCard key={item.id} item={item} onEdit={handleEditItem} onDelete={handleDeleteItem} onRestock={handleRestockItem} />
             ))}
         </div>
-      ) : ( /* Charts View */
+      ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in">
             {/* Inventory Value by Category (Pie Chart) */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
                 <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">Wadarta Qiimaha Stock-ga (Nooc Ahaan)</h3>
-                <div style={{ width: '100%', height: 300 }}>
-                    <ResponsiveContainer>
-                        <RechartsPieChart>
-                            <Pie
-                                data={categoryDistributionData}
-                                cx="50%"
-                                cy="50%"
-                                labelLine={false}
-                                label={renderCustomizedLabel}
-                                outerRadius={120}
-                                dataKey="value"
-                            >
-                                {categoryDistributionData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip 
-                                contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }}
-                                labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }}
-                                itemStyle={{ color: '#2C3E50' }}
-                            />
-                            <Legend align="right" verticalAlign="middle" layout="vertical" wrapperStyle={{ paddingLeft: '20px' }} />
-                        </RechartsPieChart>
-                    </ResponsiveContainer>
+                <div className="w-full h-[300px]">
+                  <ResponsiveContainer>
+                    <RechartsPieChart>
+                      <Pie
+                        data={categoryDistributionData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={renderCustomizedLabel}
+                        outerRadius={120}
+                        dataKey="value"
+                      >
+                        {categoryDistributionData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }}
+                        labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }}
+                        itemStyle={{ color: '#2C3E50' }}
+                      />
+                      <Legend align="right" verticalAlign="middle" layout="vertical" wrapperStyle={{ paddingLeft: '20px' }} />
+                    </RechartsPieChart>
+                  </ResponsiveContainer>
                 </div>
             </div>
-
             {/* Top 5 Most Used Materials (Bar Chart) */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
                 <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">5-ta Alaab ee Ugu Badan ee La Isticmaalay</h3>
-                <div style={{ width: '100%', height: 300 }}>
-                    <ResponsiveContainer>
-                        <RechartsBarChart data={topUsedMaterialsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" vertical={false} />
-                            <XAxis dataKey="name" stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
-                            <YAxis stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
-                            <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }} labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }} itemStyle={{ color: '#2C3E50' }} />
-                            <Legend />
-                            <Bar dataKey="value" fill={CHART_COLORS[0]} name="Quantity Used" radius={[5, 5, 0, 0]} />
-                        </RechartsBarChart>
-                    </ResponsiveContainer>
+                <div className="w-full h-[300px]">
+                  <ResponsiveContainer>
+                    <RechartsBarChart data={topUsedMaterialsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" vertical={false} />
+                      <XAxis dataKey="name" stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
+                      <YAxis stroke="#7F8C8D" className="dark:text-gray-400 text-sm" />
+                      <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '8px' }} labelStyle={{ color: '#2C3E50', fontWeight: 'bold' }} itemStyle={{ color: '#2C3E50' }} />
+                      <Legend />
+                      <Bar dataKey="value" fill={CHART_COLORS[0]} name="Quantity Used" radius={[5, 5, 0, 0]} />
+                    </RechartsBarChart>
+                  </ResponsiveContainer>
                 </div>
             </div>
         </div>

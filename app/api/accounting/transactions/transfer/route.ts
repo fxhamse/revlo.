@@ -77,6 +77,7 @@ export async function POST(request: Request) {
           fromAccountId: sourceAccount.id,
           toAccountId: destinationAccount.id,
           userId: "dummyUserId", // Mustaqbalka, ka hel session-ka
+          companyId: 'test-company-id',
         },
       });
 
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
           fromAccountId: sourceAccount.id,
           toAccountId: destinationAccount.id,
           userId: "dummyUserId", // Mustaqbalka, ka hel session-ka
+          companyId: 'test-company-id',
         },
       });
     });

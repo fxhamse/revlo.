@@ -221,10 +221,10 @@ export default function ExpensesPage() {
 const ExpenseRow: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: string) => void; onDelete: (id: string) => void }> = ({ expense, onEdit, onDelete }) => (
   <tr className="hover:bg-lightGray dark:hover:bg-gray-700 transition-colors duration-150 border-b border-lightGray dark:border-gray-700 last:border-b-0">
     <td className="p-4 whitespace-nowrap text-darkGray dark:text-gray-100">{new Date(expense.date).toLocaleDateString()}</td>
-  <td className="p-4 whitespace-nowrap text-mediumGray dark:text-gray-300">{typeof expense.project === 'string' ? expense.project : (expense.project?.name || '')}</td>
-  <td className="p-4 whitespace-nowrap text-darkGray dark:text-gray-100 font-medium flex items-center space-x-2">
-    <Tag size={16} className="text-primary"/> <span>{typeof expense.category === 'string' ? expense.category : (expense.category?.name || '')}</span>
-  </td>
+    <td className="p-4 whitespace-nowrap text-mediumGray dark:text-gray-300">{String(expense.project)}</td>
+    <td className="p-4 whitespace-nowrap text-darkGray dark:text-gray-100 font-medium flex items-center space-x-2">
+      <Tag size={16} className="text-primary"/> <span>{String(expense.category)}</span>
+    </td>
     <td className="p-4 whitespace-nowrap text-redError font-semibold">-${expense.amount.toLocaleString()}</td>
     <td className="p-4 whitespace-nowrap text-mediumGray dark:text-gray-300">{expense.paidFrom}</td>
     <td className="p-4 text-mediumGray dark:text-gray-300 truncate max-w-xs">{expense.note || 'N/A'}</td>
@@ -261,10 +261,10 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
             <span className="text-redError font-bold text-lg">-${expense.amount.toLocaleString()}</span>
         </div>
     <p className="text-sm text-mediumGray dark:text-gray-400 mb-1 flex items-center space-x-2">
-      <Briefcase size={14}/> <span>Mashruuc: {typeof expense.project === 'string' ? expense.project : (expense.project?.name || '')}</span>
+      <Briefcase size={14}/> <span>Mashruuc: {String(expense.project)}</span>
     </p>
     <p className="text-sm text-mediumGray dark:text-gray-400 mb-1 flex items-center space-x-2">
-      <Tag size={14} className="text-secondary"/> <span>Nooca: {typeof expense.category === 'string' ? expense.category : (expense.category?.name || '')}</span>
+      <Tag size={14} className="text-secondary"/> <span>Nooca: {String(expense.category)}</span>
     </p>
         <p className="text-sm text-mediumGray dark:text-gray-400 mb-1 flex items-center space-x-2">
             <Calendar size={14}/> <span>Taariikhda: {new Date(expense.date).toLocaleDateString()}</span>
@@ -356,6 +356,7 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
         <div className="relative w-full md:w-48">
           <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
           <select
+            title="Filter by Category"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
@@ -370,6 +371,7 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
         <div className="relative w-full md:w-48">
           <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
           <select
+            title="Filter by Project"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterProject}
             onChange={(e) => setFilterProject(e.target.value)}
@@ -384,6 +386,7 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
         <div className="relative w-full md:w-48">
           <CheckSquare className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
           <select
+            title="Filter by Approval Status"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterApprovalStatus}
             onChange={(e) => setFilterApprovalStatus(e.target.value)}
@@ -398,6 +401,7 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
         <div className="relative w-full md:w-48">
           <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
           <select
+            title="Filter by Paid From"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterPaidFrom}
             onChange={(e) => setFilterPaidFrom(e.target.value)}
@@ -412,6 +416,7 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
         <div className="relative w-full md:w-48">
           <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mediumGray dark:text-gray-400" size={20} />
           <select
+            title="Filter by Date Range"
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterDateRange}
             onChange={(e) => setFilterDateRange(e.target.value)}
@@ -434,7 +439,7 @@ const ExpenseCard: React.FC<{ expense: typeof dummyExpenses[0]; onEdit: (id: str
       </div>
 
       {/* Expense Chart Section - Toggleable */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-8 animate-fade-in-up">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-8 animate-fade-in">
           <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100">Expense Analysis</h3>
               <div className="flex items-center space-x-2">

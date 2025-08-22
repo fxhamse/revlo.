@@ -288,6 +288,7 @@ export default function InventoryStorePage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
+            title="Dooro category-ga alaabta"
           >
             {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
           </select>
@@ -302,6 +303,7 @@ export default function InventoryStorePage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterStockStatus}
             onChange={(e) => setFilterStockStatus(e.target.value)}
+            title="Dooro status-ka stock-ga"
           >
             {stockStatuses.map(status => <option key={status} value={status}>{status}</option>)}
           </select>
@@ -316,6 +318,7 @@ export default function InventoryStorePage() {
             className="w-full p-3 pl-10 border border-lightGray dark:border-gray-700 rounded-lg bg-lightGray dark:bg-gray-700 text-darkGray dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200 appearance-none"
             value={filterDateRange}
             onChange={(e) => setFilterDateRange(e.target.value)}
+            title="Dooro xilliga taariikhda"
           >
             {dateRanges.map(range => <option key={range} value={range}>{range}</option>)}
           </select>
@@ -325,13 +328,25 @@ export default function InventoryStorePage() {
         </div>
         {/* View Mode Toggle */}
         <div className="flex space-x-2 w-full md:w-auto justify-center">
-            <button onClick={() => setViewMode('list')} className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
+            <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}
+                title="List View"
+            >
                 <List size={20} />
             </button>
-            <button onClick={() => setViewMode('charts')} className={`p-2 rounded-lg ${viewMode === 'charts' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
+            <button
+                onClick={() => setViewMode('charts')}
+                className={`p-2 rounded-lg ${viewMode === 'charts' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}
+                title="Charts View"
+            >
                 <BarChart size={20} />
             </button>
-            <button onClick={() => setViewMode('cards')} className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}>
+            <button
+                onClick={() => setViewMode('cards')}
+                className={`p-2 rounded-lg ${viewMode === 'cards' ? 'bg-primary text-white' : 'bg-lightGray dark:bg-gray-700 text-mediumGray dark:text-gray-400'} hover:bg-primary/80 dark:hover:bg-gray-600 transition-colors duration-200`}
+                title="Cards View"
+            >
                 <LayoutGrid size={20} />
             </button>
         </div>
@@ -372,9 +387,9 @@ export default function InventoryStorePage() {
           </div>
           {/* Pagination Placeholder */}
           <div className="p-4 flex justify-between items-center border-t border-lightGray dark:border-gray-700">
-              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Hore</button>
+              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition" title="Previous page">Hore</button>
               <span className="text-sm text-darkGray dark:text-gray-100">Page 1 of {Math.ceil(filteredItems.length / 10) || 1}</span>
-              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition">Next</button>
+              <button className="text-sm text-mediumGray dark:text-gray-400 hover:text-primary transition" title="Next page">Next</button>
           </div>
         </div>
       ) : viewMode === 'cards' ? ( /* Cards View */
@@ -388,7 +403,7 @@ export default function InventoryStorePage() {
             {/* Inventory Value by Category (Pie Chart) */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
                 <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">Wadarta Qiimaha Stock-ga (Nooc Ahaan)</h3>
-                <div style={{ width: '100%', height: 300 }}>
+                <div className="chart-container">
                     <ResponsiveContainer>
                         <RechartsPieChart>
                             <Pie
@@ -418,7 +433,7 @@ export default function InventoryStorePage() {
             {/* Top 5 Most Used Materials (Bar Chart) */}
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md animate-fade-in-up">
                 <h3 className="text-xl font-semibold text-darkGray dark:text-gray-100 mb-4">5-ta Alaab ee Ugu Badan ee La Isticmaalay</h3>
-                <div style={{ width: '100%', height: 300 }}>
+                <div className="chart-container">
                     <ResponsiveContainer>
                         <RechartsBarChart data={topUsedMaterialsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" className="dark:stroke-gray-700" vertical={false} />
